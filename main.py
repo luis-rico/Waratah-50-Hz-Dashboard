@@ -11,6 +11,16 @@ def hello():
 @app.route('/50HzDashboard')
 def Dashboard():
     return render_template("50HzDashboard.html")
+
+## research
+@app.route('/stackedBarChart')
+def stackedBarChart():
+    return render_template("stackedBarChart.html")
+	
+## research
+@app.route('/stackedBarChart2')
+def stackedBarChart2():
+    return render_template("stackedBarChart-2.html")
 	
 	
 if __name__ == "__main__":

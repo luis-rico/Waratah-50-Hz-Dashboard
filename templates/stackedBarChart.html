@@ -21,7 +21,6 @@
 
   <script type="text/javascript" src="/static/keen.min.js"></script>
   <script type="text/javascript" src="/static/meta.js"></script>
-  <link rel="stylesheet" type="text/css" href="/static/rotateXaxisLabelsLHR.css" media="screen" />
   
 </head>
 <body class="application">
@@ -52,7 +51,7 @@
             All Detections Counter
           </div>
           <div class="chart-stage">
-			<div id="line-chart" ></div>
+			<div id="chart-row-Poverty1" ></div>
           </div>
           <div class="chart-notes">
             Line chart
@@ -96,8 +95,8 @@
           <div class="chart-title">
             Detections by Set
           </div>
-          <div class="chart-stage my-bar-chart">
-			<div id="Bar-chart" ></div>
+          <div class="chart-stage">
+			<div id="chart-bubble" ></div>
           </div>
           <div class="chart-notes">
             Stack chart
@@ -115,105 +114,18 @@
 
 <script>
 
-// File Data Mart - 50Hz detection v0.7 SM.xlsx sent by Shannon Meissner on Mon 19 Oct 2015 10:57AM
-// Workbook DataMart RawData 0Kph removed converted into Data Mart - 50Hz detection v0.7 SM.tsv		
-	d3.tsv("/static/Data Mart - 50Hz detection v0.7 SM.tsv", function (data) {
-		
-// Everything is imported as a string by default. Numeric column in read data must be converter to numeric
-// However, the spreadsheet 50 Hz does not contain any data that should be converted. Left in here for reference				
-		var convert_2_int = function() {
-			var max_length = data.length; 
-				for (var i=0; i < max_length; i++) {
-					data[i]["Num_Faults"] = parseInt(data[i]["Num_Faults"]);
-				}
-		}
-		convert_2_int();
+var experiments = [
+    { State_Name: "AL", Age_19_Under: 26.9, Age_19_64: 62.3, Age_65_84: 9.8, Age_85_and_Over: 0.9 },
+    { State_Name: "AL", Age_19_Under: 23.5, Age_19_64: 60.3, Age_65_84: 14.5, Age_85_and_Over: 1.8 },
+    { State_Name: "NW", Age_19_Under: 24.3, Age_19_64: 62.5, Age_65_84: 11.6, Age_85_and_Over: 1.6 },
+    { State_Name: "NW", Age_19_Under: 24.6, Age_19_64: 63.3, Age_65_84: 10.9, Age_85_and_Over: 1.2 },
+    { State_Name: "BR", Age_19_Under: 24.5, Age_19_64: 62.1, Age_65_84: 12.1, Age_85_and_Over: 1.3 },
+    { State_Name: "BR", Age_19_Under: 24.7, Age_19_64: 63.2, Age_65_84: 10.0, Age_85_and_Over: 2.2 },
+    { State_Name: "GH", Age_19_Under: 25.6, Age_19_64: 58.5, Age_65_84: 13.6, Age_85_and_Over: 2.4 },
+    { State_Name: "GH", Age_19_Under: 24.1, Age_19_64: 61.6, Age_65_84: 12.7, Age_85_and_Over: 1.5 },
+    { State_Name: "KS", Age_19_Under: 24.8, Age_19_64: 59.5, Age_65_84: 13.5, Age_85_and_Over: 2.2 },
+];
 
-// Date format needs to be parsed and and the same time, an aggregate field can be processed
-
-		var parseDate = d3.time.format("%d/%m/%Y").parse;  // LHR this is a function expression
-			data.forEach(function(d) {		// LHR d only exists whilst forEach is being executed.
-			//d.Fault_Reported_Date = parseDate(d.Fault_Reported_Date);
-			d.Detection_Date = parseDate(d.Date);
-			d.Year=d.Detection_Date.getFullYear();
-			d.DetectionInstance = 1;
-		});
-		
-var ndx = crossfilter(data);			
-
-// Line chart code
-			
-		var dateDim = ndx.dimension(function(d) {return d.Detection_Date;}); 
-		
-		var minDate = dateDim.bottom(1)[0].Detection_Date;
-		var maxDate = dateDim.top(1)[0].Detection_Date;
-		
-		var lineChart  = dc.lineChart("#line-chart");
-		
-		var Detection_Count=dateDim.group().reduceSum(function(d)
-			{return d.DetectionInstance;} );
-		
-		lineChart                       
-			.width(750).height(320)
-			.dimension(dateDim)
-			.group(Detection_Count)
-			.renderArea(true)
-			.x(d3.time.scale().domain([minDate,maxDate])) 
-			.brushOn(true)
-			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
-			.yAxisLabel("Detection Count");
-			
-// Row chart code
-
-		var locationRowChart = dc.rowChart("#row-chart");
-		var locationDimension = ndx.dimension(function(d) {return d["Nearest Train Station"];});
-		var locationGroup = locationDimension.group();
-		
-		locationGroupRow = locationGroup.reduceSum(function(d) {return d.DetectionInstance;});
-
-		var filtered_group = filter_top(locationGroupRow);
-		function filter_top(locationGroupRow) {
-		  return {
-			all:function () {
-				return locationGroupRow.top(10);
-				}
-			}
-		 }
-			
-	    locationRowChart
-			.width(280)
-			.height(300)
-			.margins({top: 20, left: 10, right: 10, bottom: 20})
-			.dimension(locationDimension)
-			.group(filtered_group)
-			.ordering(function(d) {return -d.value})
-			
-			//.ordinalColors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
-			//.colors(['#3182bd', '#6baed6', '#9ecae1', '#c6dbef', '#dadaeb'])
-			//.label(function (d) {
-			//	return d.key.split('.')[1];
-			//})
-			
-			.title(function (d) {
-				return d.value;
-			})
-			.elasticX(false)
-			.xAxis().ticks(4);
-
-// Ring chart code
-			
-		var yearRingChart   = dc.pieChart("#ring-chart");
-		var yearDim  = ndx.dimension(function(d) {return +d.Year;});
-		var year_total = yearDim.group().reduceSum(function(d) {return d.DetectionInstance;});
-
-		yearRingChart
-			.width(150).height(150)
-			.dimension(yearDim)
-			.group(year_total)
-			.innerRadius(30);
-			
-			
-/*			
 var ndx = crossfilter(experiments);
 
 var stateDim = ndx.dimension(function (d) { return d.State_Name; });
@@ -231,30 +143,10 @@ stackedBarChart
     .xUnits(dc.units.ordinal)
     .stack(age19To64Group)
     .stack(age65To84Group)
-    .stack(age85AndOverGroup); */
+    .stack(age85AndOverGroup)
+;
 
-// Bar chart code
-	
-	var setDim = ndx.dimension(function (d) { return d["A-set"]; });
-	
-	
-	var Detection_Count_per_Set = setDim.group().reduceSum(function(d)
-			{return d.DetectionInstance;} );
-	
-	var stackedBarChart = dc.barChart("#Bar-chart");
-
-	stackedBarChart
-		.width(850)
-        .height(300)
-		.dimension(setDim)
-		.group(Detection_Count_per_Set)
-		.x(d3.scale.ordinal())
-		.xUnits(dc.units.ordinal);
-		
-		
-		dc.renderAll();
-		
-	});
+dc.renderAll();
 
  </script> 
   
