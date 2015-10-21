@@ -43,11 +43,16 @@
           <div class="chart-title">
             All Detections Counter
           </div>
+		  
           <div class="chart-stage">
 			<div id="line-chart" >
 				<a href="javascript:lineChart.filterAll();dc.redrawAll();">reset</a>
 			</div>
+			<div id="range-chart">
+			</div>
           </div>
+		  
+		  
           <div class="chart-notes">
             Line chart
           </div>
@@ -149,6 +154,8 @@ var ndx = crossfilter(data);
 		
 		lineChart  = dc.lineChart("#line-chart");   // Note that 'var' has been removed in order to be able to reset chart
 													// Full explanation in http://stackoverflow.com/questions/21550270/dc-js-unable-to-redraw-charts (see jfiddle)
+													
+		var rangeChart = dc.barChart('#range-chart');
 		
 		var Detection_Count=dateDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
@@ -168,7 +175,19 @@ var ndx = crossfilter(data);
 			  return tooltipDateFormat(d.data.key) + "\nNumber of Detections: " + d.data.value; })  // Note that data, key and value are reserved words for the function and do not correspond to fields in the imported data
 			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
 			.elasticY(true)
+			.rangeChart(rangeChart)
 			.yAxisLabel("Detection Count");
+			
+		rangeChart.width(750)
+			.height(40)
+			.margins({top: 0, right: 50, bottom: 20, left: 40})
+			.dimension(dateDim)
+			.group(Detection_Count)
+			.centerBar(true)
+			.gap(1)
+			.x(d3.time.scale().domain([minDate,maxDate]))
+			.round(d3.time.month.round)
+			.xUnits(d3.time.months);
 			
 // Row chart code
 
