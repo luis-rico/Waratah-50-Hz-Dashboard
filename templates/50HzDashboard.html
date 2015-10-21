@@ -76,7 +76,7 @@
       <div class="col-sm-6 col-md-3">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Year
+            Year filter
           </div>
           <div class="chart-stage">
             <div id="ring-chart" ></div>
@@ -91,7 +91,7 @@
 
     <div class="row">
 	  
-	  <div class="col-sm-6">
+	  <div class="col-sm-12">
         <div class="chart-wrapper">
           <div class="chart-title">
             Detections by Set
@@ -158,8 +158,13 @@ var ndx = crossfilter(data);
 			.dimension(dateDim)
 			.group(Detection_Count)
 			.renderArea(true)
+			.renderHorizontalGridLines(true)
+			.renderVerticalGridLines(true)
 			.x(d3.time.scale().domain([minDate,maxDate])) 
-			.brushOn(true)
+			.brushOn(false)
+			.title(function(d){
+			  return d.data.value;
+			  })
 			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
 			.yAxisLabel("Detection Count");
 			
@@ -198,7 +203,7 @@ var ndx = crossfilter(data);
 				return d.value;
 			})
 			.elasticX(false)
-			.xAxis().ticks(4);
+			.xAxis().ticks(5);
 
 // Ring chart code
 			
@@ -244,12 +249,15 @@ stackedBarChart
 	var stackedBarChart = dc.barChart("#Bar-chart");
 
 	stackedBarChart
-		.width(850)
+		.width(1600)
         .height(300)
 		.dimension(setDim)
 		.group(Detection_Count_per_Set)
+		.renderHorizontalGridLines(true)
 		.x(d3.scale.ordinal())
-		.xUnits(dc.units.ordinal);
+		.xUnits(dc.units.ordinal)
+		.xAxisLabel("Waratah Set Number")
+		.yAxisLabel("Detection Count");
 		
 		
 		dc.renderAll();
