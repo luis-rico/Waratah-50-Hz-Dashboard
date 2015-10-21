@@ -43,7 +43,9 @@
             All Detections Counter
           </div>
           <div class="chart-stage">
-			<div id="line-chart" ></div>
+			<div id="line-chart" >
+				<a class="reset" href="javascript:lineChart.filterAll();dc.redrawAll();">reset</a>
+			</div>
           </div>
           <div class="chart-notes">
             Line chart
@@ -57,7 +59,9 @@
             Top 10 Locations
           </div>
           <div class="chart-stage">
-            <div id="row-chart" ></div>
+            <div id="row-chart" >
+				<a class="reset" href="javascript:locationRowChart.filterAll();dc.redrawAll();">reset</a>
+			</div>
           </div>
           <div class="chart-notes">
             Row chart
@@ -70,7 +74,9 @@
             Year filter
           </div>
           <div class="chart-stage">
-            <div id="ring-chart" ></div>
+            <div id="ring-chart" >
+				<a class="reset" href="javascript:yearRingChart.filterAll();dc.redrawAll();">reset</a>
+			</div>
           </div>
           <div class="chart-notes">
             Ring chart
@@ -88,7 +94,9 @@
             Detections by Set
           </div>
           <div class="chart-stage my-bar-chart">
-			<div id="Bar-chart" ></div>
+			<div id="Bar-chart" >
+				<a class="reset" href="javascript:stackedBarChart.filterAll();dc.redrawAll();">reset</a>
+			</div>
           </div>
           <div class="chart-notes">
             Stack chart
@@ -139,7 +147,8 @@ var ndx = crossfilter(data);
 		var minDate = dateDim.bottom(1)[0].Detection_Date;
 		var maxDate = dateDim.top(1)[0].Detection_Date;
 		
-		var lineChart  = dc.lineChart("#line-chart");
+		lineChart  = dc.lineChart("#line-chart");   // Note that 'var' has been removed in order to be able to reset chart
+													// Full explanation in http://stackoverflow.com/questions/21550270/dc-js-unable-to-redraw-charts (see jfiddle)
 		
 		var Detection_Count=dateDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
@@ -162,7 +171,7 @@ var ndx = crossfilter(data);
 			
 // Row chart code
 
-		var locationRowChart = dc.rowChart("#row-chart");
+		locationRowChart = dc.rowChart("#row-chart");		// Note that 'var' has been removed in order to be able to reset chart
 		var locationDimension = ndx.dimension(function(d) {return d["Nearest Train Station"];});
 		var locationGroup = locationDimension.group();
 		
@@ -199,7 +208,7 @@ var ndx = crossfilter(data);
 
 // Ring chart code
 			
-		var yearRingChart   = dc.pieChart("#ring-chart");
+		yearRingChart   = dc.pieChart("#ring-chart");			// Note that 'var' has been removed in order to be able to reset chart
 		var yearDim  = ndx.dimension(function(d) {return +d.Year;});
 		var year_total = yearDim.group().reduceSum(function(d) {return d.DetectionInstance;});
 
@@ -238,7 +247,7 @@ stackedBarChart
 	var Detection_Count_per_Set = setDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
 	
-	var stackedBarChart = dc.barChart("#Bar-chart");
+	stackedBarChart = dc.barChart("#Bar-chart");		// Note that 'var' has been removed in order to be able to reset chart
 
 	stackedBarChart
 		.width(1600)
