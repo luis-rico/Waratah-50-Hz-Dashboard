@@ -144,8 +144,6 @@ var ndx = crossfilter(data);
 		var Detection_Count=dateDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
 		
-		var tooltipDateFormat = d3.time.format("%a %e %b %Y");
-		
 		lineChart                       
 			.width(750).height(320)
 			.dimension(dateDim)
@@ -157,6 +155,9 @@ var ndx = crossfilter(data);
 			.brushOn(false)
 			.title(function(d){      // tooltips are shown by using the title function. Also, brushOn must be set to false
 			  return tooltipDateFormat(d.data.key) + "\nNumber of Detections: " + d.data.value;  // Note that data, key and value are reserved words for the function and do not correspond to fields in the imported data
+								})
+			.title(function(d){
+			  return d.data.value;
 			  })
 			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
 			.yAxisLabel("Detection Count");
