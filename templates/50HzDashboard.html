@@ -26,6 +26,7 @@
 </head>
 <body class="application">
 
+
   <div class="navbar navbar-inverse navbar-fixed-top" >
     <div class="container-fluid">
       <div class="navbar-header">
@@ -99,7 +100,7 @@
 			</div>
           </div>
           <div class="chart-notes">
-            Stack chart
+            Bar chart
           </div>
         </div>
       </div>
@@ -216,7 +217,9 @@ var ndx = crossfilter(data);
 	
 	var setDim = ndx.dimension(function (d) { return d["A-set"]; });
 	
-	var Detection_Count_per_Set = setDim.group().reduceSum(function(d)
+	setDim2 = setDim.filterExact(['A1','A3','A4','A5','A6']);
+	
+	var Detection_Count_per_Set = setDim2.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
 	
 	stackedBarChart = dc.barChart("#Bar-chart");		// Note that 'var' has been removed in order to be able to reset chart
@@ -232,17 +235,30 @@ var ndx = crossfilter(data);
 		//.ordering(function(d) { return -d.value })
 		//.sortBy(['A1','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13','A14','A15','A16','A17','A18','A19','A20','A21','A22','A23','A24','A25','A26','A27','A28','A29','A30','A31','A32','A33','A34','A35','A36','A37','A38','A39','A40','A41','A42','A43','A44','A45','A46','A47','A48','A49','A50','A51','A52','A53','A54','A55','A56','A57','A58','A59','A60','A61','A62','A63','A64','A65','A66','A67','A68','A69','A70','A71','A72','A73','A74','A75','A76','A77','A78','A80'])
 		// http://jsfiddle.net/enigmarm/3HL4a/13/ for sorting reference
-		.filter(['A1','A3','A4'])
+		.filter(["A1","A3","A4"	])
 		.elasticY(true)
 		.xAxisLabel("Waratah Set Number")
-		.yAxisLabel("Detection Count");
+		.yAxisLabel("Detection Count")
+		.xAxisPadding(500);
 	
 	stackedBarChart.on("postRender", function (c) {
         d3.selectAll('#Bar-chart .axis.x text').style("text-anchor", "end").attr("transform", function (d) { return "rotate(-45, -4, 9) "; });
     });
-		
+	
+	
 		dc.renderAll();
 		
+	// Related to this work:
+	// Best reference to add date range filter to line chart https://github.com/TomNeyland/angular-dc/issues/15
+	// and http://www.techsfo.com/blog/2013/08/focus-context-bar-chart-in-javascript/
+	
+	// Nice to have
+	// Heat map reference http://ramblings.mcpher.com/Home/excelquirks/d3/dceuro
+	// Crossfilter tutorial http://blog.rusty.io/2012/09/17/crossfilter-tutorial/
+	// Reduction library https://www.npmjs.com/package/reductio
+	// Explaining grouping http://www.helptouser.com/code/19237211-dc-js-render-bar-chart.html
+	// Another great dashboard http://edouard-legoupil.github.io/3W-Dashboard/#sector=&status=&org=&map=
+	
 	});
 
  </script> 
