@@ -155,7 +155,7 @@ var ndx = crossfilter(data);
 			.renderVerticalGridLines(true)
 			.x(d3.time.scale().domain([minDate,maxDate])) 
 			.brushOn(false)
-			.title(function(d){
+			.title(function(d){      // tooltips are shown by using the title function. Also, brushOn must be set to false
 			  return tooltipDateFormat(d.data.key) + "\nNumber of Detections: " + d.data.value;  // Note that data, key and value are reserved words for the function and do not correspond to fields in the imported data
 			  })
 			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
