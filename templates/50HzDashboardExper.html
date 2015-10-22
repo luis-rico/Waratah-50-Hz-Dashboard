@@ -87,6 +87,21 @@
           </div>
         </div>
       </div>
+	  
+	  
+		<div class="dc-data-count" style="float: right;">
+				
+				<span>  
+				<span class="filter-count"></span>
+				selected out of
+				<span class="total-count"></span>
+				records |
+					<a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+				</span>
+				
+		</div>
+	  
+	  
 
     </div>
 
@@ -141,7 +156,14 @@
 			d.DetectionInstance = 1;
 		});
 		
-var ndx = crossfilter(data);			
+var ndx = crossfilter(data);
+
+var all = ndx.groupAll();
+
+// count all the detections
+		dc.dataCount(".dc-data-count")
+			.dimension(ndx)
+			.group(all);	
 
 // Line chart code
 			
@@ -186,6 +208,7 @@ var ndx = crossfilter(data);
 			//.centerBar(true)
 			//.gap(1)
 			.x(d3.time.scale().domain([minDate,maxDate]))
+			//.filter([minDate,maxDate])              // This is not working, but I would like to show the handles of the range selector to make it more intuitive
 			//.round(d3.time.month.round)
 			//.xUnits(d3.time.months)
 			.yAxisLabel("")       // This is to blank out the yAxis labels
@@ -238,8 +261,9 @@ var ndx = crossfilter(data);
 	
 	var setDim = ndx.dimension(function (d) { return d["A-set"]; });
 	
+	// It MUST be noted that a second dimension must be created for a filter to work
+	// read http://stackoverflow.com/questions/24171662/crossfilter-filters-not-filtering-dc-js for more details
 	var setDimLHR = ndx.dimension(function (d) { return d["A-set"]; });
-	
 	setDimLHR.filter(function (d) { return d === 'A14' || d === 'A22' || d === 'A23' || d === 'A33' || d === 'A52' || d === 'A58' || d === 'A59' || d === 'A62' || d === 'A65'; });
 	
 	var Detection_Count_per_Set = setDim.group().reduceSum(function(d)
