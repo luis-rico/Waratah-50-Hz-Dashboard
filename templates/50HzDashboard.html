@@ -46,12 +46,10 @@
 		  
           <div class="chart-stage">
 			<div id="line-chart" >
-				<a href="javascript:lineChart.filterAll();dc.redrawAll();">reset</a>
+				<a href="javascript:lineChart.filterAll();rangeChart.filterAll();stackedBarChart.filterAll();dc.redrawAll();">reset</a>   <!-- stackedBarChart is including to solve a weird effect on the stacked chart -->
 			</div>
-			<div id="range-chart">
-			</div>
+			<div id="range-chart"></div>
           </div>
-		  
 		  
           <div class="chart-notes">
             Line chart
@@ -155,7 +153,7 @@ var ndx = crossfilter(data);
 		lineChart  = dc.lineChart("#line-chart");   // Note that 'var' has been removed in order to be able to reset chart
 													// Full explanation in http://stackoverflow.com/questions/21550270/dc-js-unable-to-redraw-charts (see jfiddle)
 													
-		var rangeChart = dc.barChart('#range-chart');
+		rangeChart = dc.barChart('#range-chart');	// Note that 'var' has been removed in order to be able to reset chart
 		
 		var Detection_Count=dateDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
@@ -163,7 +161,7 @@ var ndx = crossfilter(data);
 		var tooltipDateFormat = d3.time.format("%a %e %b %Y");
 		
 		lineChart                       
-			.width(750).height(320)
+			.width(750).height(205)
 			.dimension(dateDim)
 			.group(Detection_Count)
 			.renderArea(true)
@@ -173,21 +171,25 @@ var ndx = crossfilter(data);
 			.brushOn(false)
 			.title(function(d){						// tooltips are shown by using the title function. Also, brushOn must be set to false
 			  return tooltipDateFormat(d.data.key) + "\nNumber of Detections: " + d.data.value; })  // Note that data, key and value are reserved words for the function and do not correspond to fields in the imported data
-			.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
+			//.legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
 			.elasticY(true)
 			.rangeChart(rangeChart)
 			.yAxisLabel("Detection Count");
 			
-		rangeChart.width(750)
-			.height(40)
-			.margins({top: 0, right: 50, bottom: 20, left: 40})
+		rangeChart
+		    .width(750).height(70)
+			//.margins({top: 0, right: 0, bottom: 20, left: 0})
 			.dimension(dateDim)
 			.group(Detection_Count)
-			.centerBar(true)
-			.gap(1)
+			.renderHorizontalGridLines(true)
+			.renderVerticalGridLines(true)
+			//.centerBar(true)
+			//.gap(1)
 			.x(d3.time.scale().domain([minDate,maxDate]))
-			.round(d3.time.month.round)
-			.xUnits(d3.time.months);
+			//.round(d3.time.month.round)
+			//.xUnits(d3.time.months)
+			.yAxisLabel("")       // This is to blank out the yAxis labels
+			.yAxis().tickFormat(function(v) { return ""; });  // This is to blank out the yAxis scale
 			
 // Row chart code
 
@@ -216,7 +218,7 @@ var ndx = crossfilter(data);
 			.title(function (d) {
 				return d.value;
 			})
-			.elasticX(false)
+			.elasticX(true)
 			.xAxis().ticks(5);
 
 // Ring chart code
@@ -245,7 +247,7 @@ var ndx = crossfilter(data);
 
 	stackedBarChart
 		.width(1600)
-        .height(300)
+        .height(270)
 		.dimension(setDim)
 		.group(Detection_Count_per_Set)
 		.renderHorizontalGridLines(true)
@@ -256,7 +258,7 @@ var ndx = crossfilter(data);
 		// http://jsfiddle.net/enigmarm/3HL4a/13/ for sorting reference
 		.filter(["A1","A3","A4"	])
 		.elasticY(true)
-		.xAxisLabel("Waratah Set Number")
+		//.xAxisLabel("Waratah Set Number")
 		.yAxisLabel("Detection Count")
 		.xAxisPadding(500);
 	
