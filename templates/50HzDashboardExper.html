@@ -114,6 +114,8 @@
           </div>
           <div class="chart-stage my-bar-chart">
 			<div id="Bar-chart" >
+				 <button type="button" onclick="javascript:stackedBarChart.filterAll();setDimLHR2.filter(function (d) { return d === 'A14' ; });dc.redrawAll();">Modified</button>
+				 <button type="button" onclick="javascript:stackedBarChart.filterAll();setDimLHR.filter(function (d) { return d === 'A14' || d === 'A22' || d === 'A23' || d === 'A33' || d === 'A52' || d === 'A58' || d === 'A59' || d === 'A62' || d === 'A65'; });dc.redrawAll();">Un-Modified</button>
 				<a href="javascript:stackedBarChart.filterAll();dc.redrawAll();">reset</a>
 			</div>
           </div>
@@ -263,8 +265,11 @@ var all = ndx.groupAll();
 	
 	// It MUST be noted that a second dimension must be created for a filter to work
 	// read http://stackoverflow.com/questions/24171662/crossfilter-filters-not-filtering-dc-js for more details
-	var setDimLHR = ndx.dimension(function (d) { return d["A-set"]; });
-	setDimLHR.filter(function (d) { return d === 'A14' || d === 'A22' || d === 'A23' || d === 'A33' || d === 'A52' || d === 'A58' || d === 'A59' || d === 'A62' || d === 'A65'; });
+	setDimLHR = ndx.dimension(function (d) { return d["A-set"]; });
+	//setDimLHR.filter(function (d) { return d === 'A14' || d === 'A22' || d === 'A23' || d === 'A33' || d === 'A52' || d === 'A58' || d === 'A59' || d === 'A62' || d === 'A65'; });
+	
+	setDimLHR2 = ndx.dimension(function (d) { return d["A-set"]; });
+	//setDimLHR2.filter(function (d) { return d === 'A14' ; });
 	
 	var Detection_Count_per_Set = setDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
@@ -292,7 +297,8 @@ var all = ndx.groupAll();
     });
 	
 	
-		dc.renderAll();
+	
+	dc.renderAll();
 		
 	// Related to this work:
 	// Best reference to add date range filter to line chart https://github.com/TomNeyland/angular-dc/issues/15
