@@ -152,6 +152,7 @@
 		var parseDate = d3.time.format("%d/%m/%Y").parse;  // LHR this is a function expression
 			data.forEach(function(d) {		// LHR d only exists whilst forEach is being executed.
 			d.Detection_Date = parseDate(d.Date);
+			d.month = d3.time.month(d.Detection_Date); // pre-calculate month for better performance
 			d.Year=d.Detection_Date.getFullYear();
 			d.DetectionInstance = 1;
 		});
@@ -167,7 +168,8 @@ var all = ndx.groupAll();
 
 // Line chart code
 			
-		var dateDim = ndx.dimension(function(d) {return d.Detection_Date;}); 
+		//var dateDim = ndx.dimension(function(d) {return d.Detection_Date;}); 	// Note that we are grouping by month to match CMT excel plots
+		var dateDim = ndx.dimension(function(d) {return d.month;}); 
 		
 		var minDate = dateDim.bottom(1)[0].Detection_Date;
 		var maxDate = dateDim.top(1)[0].Detection_Date;
@@ -180,7 +182,8 @@ var all = ndx.groupAll();
 		var Detection_Count=dateDim.group().reduceSum(function(d)
 			{return d.DetectionInstance;} );
 			
-		var tooltipDateFormat = d3.time.format("%a %e %b %Y");
+		// var tooltipDateFormat = d3.time.format("%a %e %b %Y");
+		var tooltipDateFormat = d3.time.format("%b %Y");
 		
 		lineChart                       
 			.width(750).height(205)
@@ -189,7 +192,9 @@ var all = ndx.groupAll();
 			.renderArea(true)
 			.renderHorizontalGridLines(true)
 			.renderVerticalGridLines(true)
-			.x(d3.time.scale().domain([minDate,maxDate])) 
+			.x(d3.time.scale().domain([minDate,maxDate]))
+			//.round(d3.time.month.round)
+			//.xUnits(d3.time.months)
 			.brushOn(false)
 			.title(function(d){						// tooltips are shown by using the title function. Also, brushOn must be set to false
 			  return tooltipDateFormat(d.data.key) + "\nNumber of Detections: " + d.data.value; })  // Note that data, key and value are reserved words for the function and do not correspond to fields in the imported data
