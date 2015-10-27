@@ -15,6 +15,10 @@ def Dashboard():
 @app.route('/50HzDashboardExper')
 def DashboardExper():
     return render_template("50HzDashboardExper.html")
+	
+@app.route('/50HzDashboardSort')
+def DashboardSort():
+    return render_template("50HzDashboardSort.html")
 
 ## research
 @app.route('/stackedBarChart')
